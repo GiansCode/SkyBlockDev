@@ -1,0 +1,8 @@
+name: SkyBlock
+version: ${project.version}
+main: dev.skyblock.SkyBlock
+description: A sane and high-performance SkyBlock framework.
+author: Obadiah Crowe
+depend:
+  - FastAsyncWorldEdit
+  - Vault
