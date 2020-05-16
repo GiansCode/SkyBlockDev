@@ -26,6 +26,7 @@ import dev.skyblock.provider.ProviderAPI;
 import dev.skyblock.provider.SkyBlockProvider;
 import dev.skyblock.provider.SkyBlockProviderHandler;
 import dev.skyblock.storage.*;
+import dev.skyblock.task.ScheduledSaveTask;
 import dev.skyblock.template.TemplateHandler;
 import dev.skyblock.warp.WarpAPI;
 import dev.skyblock.warp.WarpImplementation;
@@ -139,6 +140,8 @@ public class SkyBlock extends JavaPlugin implements SkyBlockAPI {
         CommandAPI.registerCommand(
           new IslandCommand()
         );
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(new ScheduledSaveTask(this), 18000); // 15m
     }
 
     @Override
@@ -157,6 +160,30 @@ public class SkyBlock extends JavaPlugin implements SkyBlockAPI {
         this.getLogger().info("Saving configs..");
         pluginConfig.save();
         gridConfig.save();
+    }
+
+    public ChallengeStorage getChallengeStorage() {
+        return this.challengeStorage;
+    }
+
+    public GridStorage getGridStorage() {
+        return this.gridStorage;
+    }
+
+    public InvitationStorage getInvitationStorage() {
+        return this.invitationStorage;
+    }
+
+    public IslanderStorage getIslanderStorage() {
+        return this.islanderStorage;
+    }
+
+    public IslandStorage getIslandStorage() {
+        return this.islandStorage;
+    }
+
+    public WarpStorage getWarpStorage() {
+        return this.warpStorage;
     }
 
     public Gson getGson() {
