@@ -1,8 +1,8 @@
 package dev.skyblock.island;
 
+import com.boydti.fawe.FaweAPI;
 import com.boydti.fawe.object.schematic.Schematic;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
 import dev.skyblock.SkyBlock;
 import dev.skyblock.grid.GridLocation;
 import dev.skyblock.storage.IslandStorage;
@@ -71,7 +71,8 @@ public class IslandImplementation implements IslandAPI {
         Schematic schematic = template.getSchematic();
         GridLocation location = new GridLocation(island.getGridX(), island.getGridZ());
 
-        schematic.paste(new BukkitWorld(island.getWorld()),
+
+        schematic.paste(FaweAPI.getWorld(island.getWorld().getName()),
           new Vector(location.getX() * SkyBlock.getInstance().getGridConfig().getLength(), 64, location.getZ() * SkyBlock.getInstance().getGridConfig().getWidth()));
     }
 

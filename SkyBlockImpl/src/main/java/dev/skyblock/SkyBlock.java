@@ -9,7 +9,6 @@ import dev.skyblock.biome.BiomeImplementation;
 import dev.skyblock.challenge.ChallengeAPI;
 import dev.skyblock.challenge.ChallengeImplementation;
 import dev.skyblock.command.CommandAPI;
-import dev.skyblock.command.impl.IslandCommand;
 import dev.skyblock.config.LoadableConfig;
 import dev.skyblock.config.impl.GridConfig;
 import dev.skyblock.config.impl.PluginConfig;
@@ -137,11 +136,12 @@ public class SkyBlock extends JavaPlugin implements SkyBlockAPI {
         this.warpImplementation = new WarpImplementation(this.warpStorage);
         this.worldImplementation = new WorldImplementation();
 
+        /*
         CommandAPI.registerCommand(
           new IslandCommand()
-        );
+        );*/
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(new ScheduledSaveTask(this), 18000); // 15m
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new ScheduledSaveTask(this), 18000L, 0L); // 15m
     }
 
     @Override
