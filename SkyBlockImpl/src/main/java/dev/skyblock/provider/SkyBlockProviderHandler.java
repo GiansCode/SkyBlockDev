@@ -30,7 +30,10 @@ public class SkyBlockProviderHandler implements ProviderAPI {
             Files.walkFileTree(providerPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
-                    System.out.println(file.toFile());
+                    if (!file.getFileName().toString().endsWith(".jar")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     SkyBlockProviderHandler.this.loadProvider(file);
                     return FileVisitResult.CONTINUE;
                 }
@@ -69,7 +72,8 @@ public class SkyBlockProviderHandler implements ProviderAPI {
                 try {
                     Class clazz = loader.loadClass(className);
                     ProviderInfo providerInfo = (ProviderInfo) clazz.getAnnotation(ProviderInfo.class);
-                    if (providerInfo != null || clazz.getSuperclass().getName().equals(SkyBlockProvider.class.getName())) {
+
+                    if (providerInfo != null || (SkyBlockProvider.class.isAssignableFrom(clazz) && !clazz.getName().equals(SkyBlockProvider.class.getName()))) {
                         info = providerInfo;
                         mainClass = className;
                     }

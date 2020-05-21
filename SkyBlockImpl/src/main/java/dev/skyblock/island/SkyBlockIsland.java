@@ -1,20 +1,22 @@
 package dev.skyblock.island;
 
-import com.sk89q.worldedit.Vector;
+import com.google.common.collect.Sets;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import dev.skyblock.SkyBlock;
+import dev.skyblock.grid.GridLocation;
+import dev.skyblock.islander.Islander;
 import dev.skyblock.util.LazyLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SkyBlockIsland implements Island {
 
-    private static final AtomicInteger ISLAND_ID_COUNTER = new AtomicInteger(-1);
+    public static final AtomicInteger ISLAND_ID_COUNTER = new AtomicInteger(0);
 
     private int id;
 
@@ -26,8 +28,8 @@ public class SkyBlockIsland implements Island {
     private double exp;
 
     private String worldName;
-    private Vector maxPoint;
-    private Vector minPoint;
+    private BlockVector3 maxPoint;
+    private BlockVector3 minPoint;
 
     private LazyLocation homeLocation;
     private LazyLocation spawnLocation;
@@ -37,6 +39,38 @@ public class SkyBlockIsland implements Island {
 
     private int gridX;
     private int gridZ;
+
+    @Deprecated
+    public SkyBlockIsland() {}
+
+    public SkyBlockIsland(Islander islander, IslandTemplate template) {
+        this.id = ISLAND_ID_COUNTER.getAndIncrement();
+
+        this.owner = islander.getUuid();
+        this.members = new HashMap<UUID, IslandRole>() {{
+            put(islander.getUuid(), IslandRole.OWNER);
+        }};
+        this.bannedPlayers = Sets.newHashSet();
+
+        this.level = 1;
+        this.exp = 0.0D;
+
+        this.worldName = SkyBlock.getInstance().getGridConfig().getWorldName();
+
+        GridLocation location = SkyBlock.getInstance().getGridAPI().getNextLocation();
+        this.maxPoint = BlockVector3.at(location.getX() * SkyBlock.getInstance().getGridConfig().getLength(), 256, location.getZ() * SkyBlock.getInstance().getGridConfig().getWidth());
+        this.minPoint = BlockVector3.at(location.getX() / SkyBlock.getInstance().getGridConfig().getLength(), 0, location.getZ() / SkyBlock.getInstance().getGridConfig().getWidth());
+
+        Region region = this.getRegion();
+        this.homeLocation = new LazyLocation(this.getWorld(), region.getCenter().getX(), 64, region.getCenter().getZ());
+        this.spawnLocation = this.homeLocation;
+
+        this.locked = false;
+        this.templateClass = template.getClass().getName();
+
+        this.gridX = location.getX();
+        this.gridZ = location.getZ();
+    }
 
     @Override
     public int getId() {
@@ -74,12 +108,12 @@ public class SkyBlockIsland implements Island {
     }
 
     @Override
-    public Vector getMaxPoint() {
+    public BlockVector3 getMaxPoint() {
         return this.maxPoint;
     }
 
     @Override
-    public Vector getMinPoint() {
+    public BlockVector3 getMinPoint() {
         return this.minPoint;
     }
 
@@ -131,6 +165,11 @@ public class SkyBlockIsland implements Island {
     @Override
     public World getWorld() {
         return Bukkit.getWorld(this.worldName);
+    }
+
+    @Override
+    public String getWorldName() {
+        return this.worldName;
     }
 
     @Override

@@ -30,11 +30,6 @@
         </repository>
 
         <repository>
-            <id>fawe-repo</id>
-            <url>https://ci.athion.net/job/FastAsyncWorldEdit-Breaking/ws/mvn</url>
-        </repository>
-
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -52,7 +47,8 @@
             <groupId>com.boydti</groupId>
             <artifactId>fawe-api</artifactId>
             <version>latest</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../lib/FastAsyncWorldEdit-1.15-245.jar</systemPath>
         </dependency>
 
         <dependency>

@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public interface IslandAPI {
 
+    Island createIsland(Islander islander, IslandTemplate template);
+
     Optional<Island> getByOwner(UUID uuid);
 
     Optional<Island> getById(int id);

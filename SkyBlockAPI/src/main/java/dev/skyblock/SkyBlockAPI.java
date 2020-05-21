@@ -12,6 +12,7 @@ import dev.skyblock.provider.ProviderAPI;
 import dev.skyblock.warp.WarpAPI;
 import dev.skyblock.world.WorldAPI;
 
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface SkyBlockAPI {
@@ -21,6 +22,8 @@ public interface SkyBlockAPI {
     }
 
     String getVersion();
+
+    Path getPath();
 
     BanAPI getBanAPI();
 

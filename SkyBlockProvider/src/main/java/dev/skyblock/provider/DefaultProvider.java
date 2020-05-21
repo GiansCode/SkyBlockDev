@@ -1,11 +1,17 @@
 package dev.skyblock.provider;
 
 import com.google.common.collect.Lists;
+import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.challenge.Challenge;
 import dev.skyblock.island.IslandTemplate;
 import dev.skyblock.provider.challenge.ExampleChallenge;
 import dev.skyblock.provider.template.ExampleTemplate;
 
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @ProviderInfo(name = "Default Provider", version = "1.0", author = "Obadiah Crowe")

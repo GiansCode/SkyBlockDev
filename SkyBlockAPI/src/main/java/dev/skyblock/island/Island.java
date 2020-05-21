@@ -1,6 +1,6 @@
 package dev.skyblock.island;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import dev.skyblock.util.LazyLocation;
 import org.bukkit.World;
@@ -25,9 +25,9 @@ public interface Island {
 
     void setExp(double exp);
 
-    Vector getMaxPoint();
+    BlockVector3 getMaxPoint();
 
-    Vector getMinPoint();
+    BlockVector3 getMinPoint();
 
     Region getRegion();
 
@@ -48,6 +48,8 @@ public interface Island {
     IslandTemplate getTemplate();
 
     World getWorld();
+
+    String getWorldName();
 
     int getGridX();
 

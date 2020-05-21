@@ -1,6 +1,6 @@
 package dev.skyblock.island;
 
-import com.boydti.fawe.object.schematic.Schematic;
+import java.io.File;
 
 public interface IslandTemplate {
 
@@ -8,7 +8,7 @@ public interface IslandTemplate {
 
     String[] getDesc();
 
-    Schematic getSchematic();
+    File getSchematic();
 
     int getStartingSize();
 

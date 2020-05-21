@@ -1,16 +1,25 @@
 package dev.skyblock.island;
 
 import com.boydti.fawe.FaweAPI;
-import com.boydti.fawe.object.schematic.Schematic;
-import com.sk89q.worldedit.Vector;
+import com.boydti.fawe.object.clipboard.MultiClipboardHolder;
+import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.math.BlockVector3;
 import dev.skyblock.SkyBlock;
 import dev.skyblock.grid.GridLocation;
+import dev.skyblock.islander.Islander;
 import dev.skyblock.storage.IslandStorage;
 import dev.skyblock.util.LazyLocation;
 import dev.skyblock.util.UtilConcurrency;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,6 +37,27 @@ public class IslandImplementation implements IslandAPI {
 
         this.storage = storage;
         INSTANCE.set(this);
+
+        SkyBlockIsland.ISLAND_ID_COUNTER.set(this.storage.getIslands().keySet().stream()
+          .sorted(Integer::compareTo)
+          .limit(1)
+          .findFirst()
+          .orElse(0));
+    }
+
+    @Override
+    public Island createIsland(Islander islander, IslandTemplate template) {
+        if (this.getByOwner(islander.getUuid()).isPresent()) {
+            throw new IllegalStateException("An island already exists for this player.");
+        }
+
+        SkyBlockIsland island = new SkyBlockIsland(islander, template);
+
+        this.storage.getIslands().compute(island.getId(), (id, i) -> island);
+
+        this.generateIsland(island, template);
+
+        return island;
     }
 
     @Override
@@ -68,12 +98,22 @@ public class IslandImplementation implements IslandAPI {
 
     @Override
     public void generateIsland(Island island, IslandTemplate template) {
-        Schematic schematic = template.getSchematic();
+        File file = template.getSchematic();
         GridLocation location = new GridLocation(island.getGridX(), island.getGridZ());
 
+        SkyBlock.getInstance().getLogger().info("Attempting to load schematic: " + file.getAbsolutePath());
+        try {
+            BlockVector3 pasteLocation = BlockVector3.at(location.getX() * SkyBlock.getInstance().getGridConfig().getLength(), 110,
+              location.getZ() * SkyBlock.getInstance().getGridConfig().getWidth());
 
-        schematic.paste(FaweAPI.getWorld(island.getWorld().getName()),
-          new Vector(location.getX() * SkyBlock.getInstance().getGridConfig().getLength(), 64, location.getZ() * SkyBlock.getInstance().getGridConfig().getWidth()));
+            FaweAPI.load(file).paste(FaweAPI.getWorld(island.getWorldName()), pasteLocation);
+            SkyBlock.getInstance().getLogger().info("Pasting at: " + pasteLocation.toString());
+
+            island.setSpawn(new LazyLocation(island.getWorldName(), pasteLocation.getBlockX(), pasteLocation.getBlockY(), pasteLocation.getBlockZ()));
+            island.setHome(island.getSpawn());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
