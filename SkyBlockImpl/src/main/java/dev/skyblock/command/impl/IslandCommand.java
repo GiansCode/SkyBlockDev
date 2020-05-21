@@ -3,6 +3,7 @@ package dev.skyblock.command.impl;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
 import dev.skyblock.command.impl.management.IslandCreateCommand;
+import dev.skyblock.command.impl.management.IslandResetCommand;
 import org.bukkit.command.CommandSender;
 
 public class IslandCommand extends Command {
@@ -24,7 +25,8 @@ public class IslandCommand extends Command {
         this.setMaxArgs(0);
 
         this.addSubCommands(
-          new IslandCreateCommand()
+          new IslandCreateCommand(),
+          new IslandResetCommand()
         );
     }
 

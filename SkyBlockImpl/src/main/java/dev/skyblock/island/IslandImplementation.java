@@ -98,6 +98,10 @@ public class IslandImplementation implements IslandAPI {
 
     @Override
     public void generateIsland(Island island, IslandTemplate template) {
+        if (template == null) {
+            template = SkyBlock.getInstance().getProviderAPI().getProvider().getTemplates().get(0);
+        }
+
         File file = template.getSchematic();
         GridLocation location = new GridLocation(island.getGridX(), island.getGridZ());
 

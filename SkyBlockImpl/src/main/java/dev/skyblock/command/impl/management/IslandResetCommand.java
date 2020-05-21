@@ -3,11 +3,13 @@ package dev.skyblock.command.impl.management;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.island.Island;
 import dev.skyblock.islander.Islander;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class IslandResetCommand extends Command {
 
@@ -31,5 +33,14 @@ public class IslandResetCommand extends Command {
     @Override
     protected void execute(CommandSender sender, String... args) throws Exception {
         Islander islander = SkyBlockAPI.get().getIslanderAPI().getIslander((Player) sender);
+        Optional<Island> island = SkyBlockAPI.get().getIslandAPI().getByOwner(islander);
+
+        if (!island.isPresent()) {
+            sender.sendMessage(ChatColor.RED + "You do not have an island.");
+            return;
+        }
+
+        SkyBlockAPI.get().getIslandAPI().resetIsland(island.get());
+        sender.sendMessage(ChatColor.GREEN + "Your island has been reset.");
     }
 }
