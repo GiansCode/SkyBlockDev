@@ -2,8 +2,12 @@ package dev.skyblock.command.impl;
 
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
-import dev.skyblock.command.impl.management.IslandCreateCommand;
-import dev.skyblock.command.impl.management.IslandResetCommand;
+import dev.skyblock.command.impl.home.IslandHomeCommand;
+import dev.skyblock.command.impl.management.*;
+import dev.skyblock.command.impl.misc.IslandTopCommand;
+import dev.skyblock.command.impl.misc.IslandVisitCommand;
+import dev.skyblock.command.impl.warp.IslandSetWarpCommand;
+import dev.skyblock.command.impl.warp.IslandWarpCommand;
 import org.bukkit.command.CommandSender;
 
 public class IslandCommand extends Command {
@@ -25,8 +29,22 @@ public class IslandCommand extends Command {
         this.setMaxArgs(0);
 
         this.addSubCommands(
+          new IslandHomeCommand(),
+
+          new IslandBiomeCommand(),
           new IslandCreateCommand(),
-          new IslandResetCommand()
+          new IslandDeleteCommand(),
+          new IslandLockCommand(),
+          new IslandResetCommand(),
+          new IslandSetSpawnCommand(),
+          new IslandSpawnCommand(),
+          new IslandUnlockCommand(),
+
+          new IslandVisitCommand(),
+          new IslandTopCommand(),
+
+          new IslandSetWarpCommand(),
+          new IslandWarpCommand()
         );
     }
 

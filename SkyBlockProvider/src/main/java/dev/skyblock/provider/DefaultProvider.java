@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.challenge.Challenge;
 import dev.skyblock.island.IslandTemplate;
+import dev.skyblock.island.island.IslandValueCalculator;
 import dev.skyblock.provider.challenge.ExampleChallenge;
 import dev.skyblock.provider.template.ExampleTemplate;
+import dev.skyblock.provider.value.DefaultValueCalculator;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -39,5 +41,10 @@ public class DefaultProvider extends SkyBlockProvider {
         return Lists.newArrayList(
           new ExampleTemplate()
         );
+    }
+
+    @Override
+    public IslandValueCalculator getValueCalculator() {
+        return new DefaultValueCalculator();
     }
 }

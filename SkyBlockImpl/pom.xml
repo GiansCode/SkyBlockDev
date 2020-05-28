@@ -48,7 +48,7 @@
             <artifactId>fawe-api</artifactId>
             <version>latest</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/FastAsyncWorldEdit-1.15-245.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/FastAsyncWorldEdit-1.15-254.jar</systemPath>
         </dependency>
 
         <dependency>

@@ -1,6 +1,9 @@
 package dev.skyblock.island;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.io.File;
+import java.util.List;
 
 public interface IslandTemplate {
 
@@ -13,4 +16,6 @@ public interface IslandTemplate {
     int getStartingSize();
 
     int getMaxSize();
+
+    List<ItemStack> getStartingItems();
 }

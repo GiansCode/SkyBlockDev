@@ -146,9 +146,11 @@ public class SkyBlock extends JavaPlugin implements SkyBlockAPI {
         this.warpImplementation = new WarpImplementation(this.warpStorage);
         this.worldImplementation = new WorldImplementation();
 
-        CommandAPI.registerCommand(
-          new IslandCommand()
-        );
+        if (pluginConfig.enableDefaultCommands()) {
+            CommandAPI.registerCommand(
+              new IslandCommand()
+            );
+        }
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new ScheduledSaveTask(this), 18000L, 0L); // 15m
     }

@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,4 +42,10 @@ public interface IslandAPI {
     void generateIsland(Island island, IslandTemplate template);
 
     void resetIsland(Island island);
+
+    void deleteIsland(Island island);
+
+    void updateIsland(Island island);
+
+    List<Island> getAllIslands();
 }

@@ -2,6 +2,7 @@ package dev.skyblock.island;
 
 import com.boydti.fawe.FaweAPI;
 import com.boydti.fawe.object.clipboard.MultiClipboardHolder;
+import com.google.common.collect.Lists;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
@@ -20,6 +21,8 @@ import org.bukkit.Material;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -134,12 +137,51 @@ public class IslandImplementation implements IslandAPI {
             for (int x = minX; x < maxX; x++) {
                 for (int y = minY; y < maxY; y++) {
                     for (int z = minZ; z < maxZ; z++) {
-                        island.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+                        final int finalX = x;
+                        final int finalY = y;
+                        final int finalZ = z;
+                        UtilConcurrency.runSync(() -> island.getWorld().getBlockAt(finalX, finalY, finalZ).setType(Material.AIR));
                     }
                 }
             }
 
             this.generateIsland(island, island.getTemplate());
         });
+    }
+
+    @Override
+    public void deleteIsland(Island island) {
+        UtilConcurrency.runAsync(() -> {
+            int maxX = (int) Math.max(island.getMinPoint().getX(), island.getMaxPoint().getX());
+            int maxY = (int) Math.max(island.getMinPoint().getY(), island.getMaxPoint().getY());
+            int maxZ = (int) Math.max(island.getMinPoint().getZ(), island.getMaxPoint().getZ());
+
+            int minX = (int) Math.min(island.getMinPoint().getX(), island.getMaxPoint().getX());
+            int minY = (int) Math.min(island.getMinPoint().getY(), island.getMaxPoint().getY());
+            int minZ = (int) Math.min(island.getMinPoint().getZ(), island.getMaxPoint().getZ());
+
+            for (int x = minX; x < maxX; x++) {
+                for (int y = 0; y < 256; y++) {
+                    for (int z = minZ; z < maxZ; z++) {
+                        final int finalX = x;
+                        final int finalY = y;
+                        final int finalZ = z;
+                        UtilConcurrency.runSync(() -> island.getWorld().getBlockAt(finalX, finalY, finalZ).setType(Material.AIR));
+                    }
+                }
+            }
+        });
+
+        this.storage.getIslands().remove(island.getId());
+    }
+
+    @Override
+    public void updateIsland(Island island) {
+        this.storage.getIslands().compute(island.getId(), (id, is) -> (SkyBlockIsland) island);
+    }
+
+    @Override
+    public List<Island> getAllIslands() {
+        return Collections.unmodifiableList(Lists.newArrayList(this.storage.getIslands().values()));
     }
 }
