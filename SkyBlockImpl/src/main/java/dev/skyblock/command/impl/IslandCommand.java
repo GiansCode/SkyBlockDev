@@ -50,6 +50,8 @@ public class IslandCommand extends Command {
 
     @Override
     protected void execute(CommandSender sender, String... args) throws Exception {
-
+        this.getSubCommands().forEach(command -> {
+            sender.sendMessage(ChatColor.BLUE + "/is " + command.getName() + ChatColor.DARK_GRAY + " » " + ChatColour.GRAY + command.getDescription());
+        });
     }
 }

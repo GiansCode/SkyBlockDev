@@ -60,6 +60,30 @@ public abstract class Command {
     }
 
     /**
+     * Represents a command.
+     *
+     * @param name Name of the command.
+     * @param permission The optional permission node that is required to execute this command.
+     * @param description The description of what the command does.
+     */
+    public Command(String name, @Nullable String permission, String description) {
+        this.name = name;
+        this.subCommands = Sets.newHashSet();
+        this.aliases = Sets.newHashSet();
+        this.usage = this.getCommandUsage();
+
+        this.description = description;
+
+        this.permission = permission == null ? EMPTY : permission;
+        this.permittedSources = new boolean[] {
+          true, true, true
+        };
+
+        this.minArgs = 0;
+        this.maxArgs = 0;
+    }
+
+    /**
      * Adds an array of subcommands to this command.
      *
      * @param commands Commands to register as subcommands.
