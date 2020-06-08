@@ -8,6 +8,7 @@ import dev.skyblock.command.impl.misc.IslandTopCommand;
 import dev.skyblock.command.impl.misc.IslandVisitCommand;
 import dev.skyblock.command.impl.warp.IslandSetWarpCommand;
 import dev.skyblock.command.impl.warp.IslandWarpCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class IslandCommand extends Command {
@@ -51,7 +52,7 @@ public class IslandCommand extends Command {
     @Override
     protected void execute(CommandSender sender, String... args) throws Exception {
         this.getSubCommands().forEach(command -> {
-            sender.sendMessage(ChatColor.BLUE + "/is " + command.getName() + ChatColor.DARK_GRAY + " » " + ChatColour.GRAY + command.getDescription());
+            sender.sendMessage(ChatColor.BLUE + "/is " + command.getName() + ChatColor.DARK_GRAY + " » " + ChatColor.GRAY + command.getDescription());
         });
     }
 }
