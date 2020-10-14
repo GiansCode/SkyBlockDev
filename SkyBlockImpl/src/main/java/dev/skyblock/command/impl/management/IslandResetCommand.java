@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import dev.skyblock.islander.Islander;
 import org.bukkit.ChatColor;
@@ -11,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandResetCommand extends Command {
+public class IslandResetCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -42,5 +45,13 @@ public class IslandResetCommand extends Command {
 
         SkyBlockAPI.get().getIslandAPI().resetIsland(island.get());
         sender.sendMessage(ChatColor.GREEN + "Your island has been reset.");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("reset"))
+          .then(LiteralArgumentBuilder.literal("r"))
+          .build();
     }
 }

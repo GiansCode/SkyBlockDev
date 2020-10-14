@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.warp;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import dev.skyblock.util.LazyLocation;
 import org.bukkit.ChatColor;
@@ -11,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandSetWarpCommand extends Command {
+public class IslandSetWarpCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -46,5 +49,13 @@ public class IslandSetWarpCommand extends Command {
         SkyBlockAPI.get().getWarpAPI().createWarp(is, warpName, new LazyLocation(player.getLocation()));
         SkyBlockAPI.get().getIslandAPI().updateIsland(is);
         player.sendMessage(ChatColor.GREEN + "You have created the warp: " + warpName + "!");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("setwarp"))
+          .then(LiteralArgumentBuilder.literal("sw"))
+          .build();
     }
 }

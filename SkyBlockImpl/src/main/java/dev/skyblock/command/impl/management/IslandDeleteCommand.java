@@ -1,9 +1,12 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlock;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -11,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandDeleteCommand extends Command {
+public class IslandDeleteCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -43,5 +46,13 @@ public class IslandDeleteCommand extends Command {
         SkyBlockAPI.get().getIslandAPI().deleteIsland(island.get());
         player.teleport(player.getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.GREEN + "Your island has been deleted.");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("delete"))
+          .then(LiteralArgumentBuilder.literal("del"))
+          .build();
     }
 }

@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandSpawnCommand extends Command {
+public class IslandSpawnCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -40,5 +43,12 @@ public class IslandSpawnCommand extends Command {
 
         player.teleport(island.get().getSpawn().toLocation());
         player.sendMessage(ChatColor.GREEN + "You have teleported to your island spawn.");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("spawn"))
+          .build();
     }
 }

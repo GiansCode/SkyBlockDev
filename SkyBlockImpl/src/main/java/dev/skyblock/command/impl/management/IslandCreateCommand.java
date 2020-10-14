@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import dev.skyblock.island.IslandAPI;
 import dev.skyblock.islander.Islander;
@@ -11,7 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class IslandCreateCommand extends Command {
+public class IslandCreateCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -40,5 +43,13 @@ public class IslandCreateCommand extends Command {
 
         ((Player) sender).teleport(island.getSpawn().toLocation());
         sender.sendMessage(ChatColor.GREEN + "Island created.");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("create"))
+          .then(LiteralArgumentBuilder.literal("c"))
+          .build();
     }
 }

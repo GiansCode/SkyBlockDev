@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import dev.skyblock.util.LazyLocation;
 import org.bukkit.ChatColor;
@@ -11,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandSetSpawnCommand extends Command {
+public class IslandSetSpawnCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -45,5 +48,13 @@ public class IslandSetSpawnCommand extends Command {
         is.setSpawn(new LazyLocation(player.getLocation()));
         SkyBlockAPI.get().getIslandAPI().updateIsland(is);
         player.sendMessage(ChatColor.GREEN + "You have set your island spawn to your location.");
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("setspawn"))
+          .then(LiteralArgumentBuilder.literal("ss"))
+          .build();
     }
 }

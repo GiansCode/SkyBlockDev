@@ -33,22 +33,26 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
+        <repository>
+            <id>IntellectualSites</id>
+            <url>https://mvn.intellectualsites.com/content/repositories/releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.boydti</groupId>
-            <artifactId>fawe-api</artifactId>
-            <version>latest</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/FastAsyncWorldEdit-1.15-254.jar</systemPath>
+            <groupId>com.intellectualsites.fawe</groupId>
+            <artifactId>FAWE-Bukkit</artifactId>
+            <version>1.16-412</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

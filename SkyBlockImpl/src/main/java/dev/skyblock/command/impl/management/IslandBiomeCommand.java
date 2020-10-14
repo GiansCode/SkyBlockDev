@@ -1,8 +1,11 @@
 package dev.skyblock.command.impl.management;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
 import dev.skyblock.island.Island;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
@@ -11,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class IslandBiomeCommand extends Command {
+public class IslandBiomeCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -47,5 +50,12 @@ public class IslandBiomeCommand extends Command {
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED + "Invalid biome: " + args[0]);
         }
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("biome"))
+          .build();
     }
 }

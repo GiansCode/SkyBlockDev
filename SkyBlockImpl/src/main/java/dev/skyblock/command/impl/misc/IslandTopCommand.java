@@ -1,12 +1,18 @@
 package dev.skyblock.command.impl.misc;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.skyblock.SkyBlockAPI;
 import dev.skyblock.command.Command;
 import dev.skyblock.command.CommandSource;
+import dev.skyblock.command.CompletableCommand;
+import dev.skyblock.island.Island;
 import dev.skyblock.island.island.IslandValueCalculator;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class IslandTopCommand extends Command {
+public class IslandTopCommand extends Command implements CompletableCommand {
 
     /**
      * Represents a command.
@@ -28,6 +34,17 @@ public class IslandTopCommand extends Command {
     protected void execute(CommandSender sender, String... args) throws Exception {
         IslandValueCalculator calculator = SkyBlockAPI.get().getProviderAPI().getProvider().getValueCalculator();
 
-        calculator.getTopIslands(10);
+        sender.sendMessage(ChatColor.GREEN + "Top Islands:");
+        int index = 1;
+        for (Island island : calculator.getTopIslands(10)) {
+            sender.sendMessage(ChatColor.GREEN + "#" + index++ + " " + Bukkit.getOfflinePlayer(island.getOwnerUuid()).getName() + " - $" + calculator.getIslandValue(island));
+        }
+    }
+
+    @Override
+    public LiteralCommandNode<?> getCompletions() {
+        return LiteralArgumentBuilder.literal("island")
+          .then(LiteralArgumentBuilder.literal("top"))
+          .build();
     }
 }

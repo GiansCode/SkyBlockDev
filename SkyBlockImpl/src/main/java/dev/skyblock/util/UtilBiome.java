@@ -1,14 +1,18 @@
 package dev.skyblock.util;
 
-import com.google.common.collect.Sets;
 import dev.skyblock.island.Island;
+import net.minecraft.server.v1_16_R2.PacketPlayOutMapChunk;
+import net.minecraft.server.v1_16_R2.PacketPlayOutUnloadChunk;
+import net.minecraft.server.v1_16_R2.PlayerConnection;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_16_R2.CraftChunk;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.Set;
 
 @Immutable
 public final class UtilBiome {
@@ -22,7 +26,20 @@ public final class UtilBiome {
                 for (int z = island.getMinPoint().getBlockZ(); z < island.getMaxPoint().getBlockZ(); z++) {
                     final int finalX = x;
                     final int finalZ = z;
-                    UtilConcurrency.runSync(() -> world.setBiome(finalX, finalZ, biome));
+                    UtilConcurrency.runSync(() -> {
+                        world.setBiome(finalX, finalZ, biome);
+
+                        Chunk chunk = world.getChunkAt(finalX >> 4, finalZ >> 4);
+
+                        PacketPlayOutUnloadChunk unload = new PacketPlayOutUnloadChunk(chunk.getX(), chunk.getZ());
+                        PacketPlayOutMapChunk packet = new PacketPlayOutMapChunk(((CraftChunk) chunk).getHandle(), 65535);
+
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+                            connection.sendPacket(unload);
+                            connection.sendPacket(packet);
+                        }
+                    });
                 }
             }
         });

@@ -1,12 +1,7 @@
 package dev.skyblock.island;
 
 import com.boydti.fawe.FaweAPI;
-import com.boydti.fawe.object.clipboard.MultiClipboardHolder;
 import com.google.common.collect.Lists;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.math.BlockVector3;
 import dev.skyblock.SkyBlock;
 import dev.skyblock.grid.GridLocation;
@@ -14,12 +9,10 @@ import dev.skyblock.islander.Islander;
 import dev.skyblock.storage.IslandStorage;
 import dev.skyblock.util.LazyLocation;
 import dev.skyblock.util.UtilConcurrency;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +43,6 @@ public class IslandImplementation implements IslandAPI {
 
     @Override
     public Island createIsland(Islander islander, IslandTemplate template) {
-        if (this.getByOwner(islander.getUuid()).isPresent()) {
-            throw new IllegalStateException("An island already exists for this player.");
-        }
-
         SkyBlockIsland island = new SkyBlockIsland(islander, template);
 
         this.storage.getIslands().compute(island.getId(), (id, i) -> island);
