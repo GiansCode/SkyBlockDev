@@ -1,17 +1,38 @@
 package dev.skyblock.config.type;
 
-import dev.skyblock.SkyBlock;
+import com.google.common.collect.Maps;
 import dev.skyblock.config.ConfigType;
 import dev.skyblock.config.LoadableConfig;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.skyblock.config.representer.YamlObjectRepresenter;
+import org.bukkit.Bukkit;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
 
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.logging.Logger;
 
+@NotThreadSafe
 public abstract class YamlConfig<T extends YamlConfig> implements LoadableConfig<T> {
+
+    private static transient final YamlObjectRepresenter REPRESENTER = new YamlObjectRepresenter();
+    private static transient final DumperOptions DUMPER_OPTIONS = new DumperOptions();
+
+    static {
+        DUMPER_OPTIONS.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        DUMPER_OPTIONS.setPrettyFlow(true);
+    }
 
     /**
      * Class of the configuration (for serialisation).
@@ -19,31 +40,39 @@ public abstract class YamlConfig<T extends YamlConfig> implements LoadableConfig
     private transient final Class<T> clazz;
 
     /**
-     * The Bukkit config that will be used to drive the automatic loading.
-     */
-    protected transient final YamlConfiguration config;
-
-    /**
      * Logger to log to.
      */
     private transient final Logger logger;
+
+    /**
+     * Backing yaml to load to / from.
+     */
+    private transient final Yaml backingYaml;
 
     /**
      * Represents a configuration file.
      *
      * @param clazz Class of the configuration.
      */
-    public YamlConfig(Class<T> clazz) throws NullPointerException {
+    public YamlConfig(Class<T> clazz) {
         this.clazz = clazz;
-        this.config = new YamlConfiguration();
-        this.logger = SkyBlock.getInstance().getLogger();
+        this.logger = Bukkit.getServer().getLogger();
 
-        if (Files.exists(this.getPath())) {
-            try {
-                this.config.load(this.getPath().toFile());
-            } catch (IOException | InvalidConfigurationException e) {
-                e.printStackTrace();
+        this.backingYaml = new Yaml(new Constructor(this.clazz), REPRESENTER, DUMPER_OPTIONS);
+        this.backingYaml.setBeanAccess(BeanAccess.FIELD);
+
+        for (Field field : this.clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
             }
+
+            if (!field.getType().isEnum()) {
+                continue;
+            }
+
+            this.backingYaml.addTypeDescription(new TypeDescription(field.getType(), field.getName()));
         }
     }
 
@@ -57,21 +86,19 @@ public abstract class YamlConfig<T extends YamlConfig> implements LoadableConfig
     public T load() {
         try {
             this.logger.info("Attempting to load config, " + this.getClass().getSimpleName() + "..");
-
-            T instance;
-
-            if (!Files.exists(this.getPath())) {
+            return this.backingYaml.loadAs(new FileInputStream(this.getPath().toFile()), this.clazz);
+        } catch (Exception e) {
+            if (e instanceof FileNotFoundException) {
                 this.logger.warning("Could not find, " + this.getPath().toFile().getName() + ", creating one now..");
-
-                instance = (T) this.clazz.newInstance().getDefaultConfig();
-                instance.save();
             } else {
-                instance = this.clazz.newInstance();
+                e.printStackTrace();
             }
 
-            return instance;
-        } catch (NullPointerException | IllegalAccessException | InstantiationException e) {
-            throw new RuntimeException(e);
+            T config = this.getDefaultConfig();
+
+            config.save();
+
+            return config;
         }
     }
 
@@ -97,14 +124,37 @@ public abstract class YamlConfig<T extends YamlConfig> implements LoadableConfig
 
     @Override
     public void save() {
-        this.writeValues(this.config);
-
         try {
-            this.config.save(this.getPath().toFile());
+            if (!Files.exists(this.getPath())) {
+                Files.createFile(this.getPath());
+            }
+
+            Map<String, Object> tags = Maps.newHashMap();
+
+            for (Field field : this.clazz.getDeclaredFields()) {
+                field.setAccessible(true);
+
+                if (Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+
+                try {
+                    if (field.getClass().isEnum()) {
+                        tags.put(field.getName(), ((Enum<?>) field.get(this)).name());
+                        continue;
+                    }
+
+                    tags.put(field.getName(), field.get(this));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            FileWriter writer = new FileWriter(this.getPath().toFile());
+
+            this.backingYaml.dump(tags, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public abstract void writeValues(YamlConfiguration config);
 }

@@ -30,7 +30,11 @@ public enum ConfigType {
     private static final Map<String, ConfigType> TYPES = Maps.newHashMap();
 
     static {
-        Stream.of(ConfigType.values()).forEach(type -> Stream.of(type.getValidExtensions()).forEach(ext -> TYPES.put(ext, type)));
+        for (ConfigType type : ConfigType.values()) {
+            for (String extension : type.getValidExtensions()) {
+                TYPES.put(extension, type);
+            }
+        }
     }
 
     private final String[] validExtensions;

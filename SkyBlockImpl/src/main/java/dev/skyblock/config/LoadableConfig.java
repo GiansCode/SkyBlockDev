@@ -39,7 +39,6 @@ public interface LoadableConfig<T extends LoadableConfig> {
      * Obtains a LoadableConfig instance by it's class.
      *
      * @param configClass The class to load from.
-     *
      * @return An instance of either JsonConfig or YamlConfig.
      */
     @SuppressWarnings("unchecked")
@@ -49,7 +48,7 @@ public interface LoadableConfig<T extends LoadableConfig> {
         }
 
         try {
-            return (T) configClass.getConstructor().newInstance().load();
+            return configClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

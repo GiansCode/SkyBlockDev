@@ -1,16 +1,26 @@
 package dev.skyblock.config.type;
 
-import dev.skyblock.SkyBlock;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.skyblock.config.ConfigType;
 import dev.skyblock.config.LoadableConfig;
+import org.bukkit.Bukkit;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+@ThreadSafe
 public abstract class JsonConfig<T extends JsonConfig> implements LoadableConfig<T> {
+
+    private static final Gson GSON_INSTANCE = new GsonBuilder()
+      .serializeNulls()
+      .disableHtmlEscaping()
+      .setPrettyPrinting()
+      .create();
 
     /**
      * Class of the configuration (for serialisation).
@@ -29,7 +39,7 @@ public abstract class JsonConfig<T extends JsonConfig> implements LoadableConfig
      */
     public JsonConfig(Class<? extends JsonConfig> clazz) {
         this.configurationClass = clazz;
-        this.logger = SkyBlock.getInstance().getLogger();
+        this.logger = Bukkit.getServer().getLogger();
     }
 
     /**
@@ -42,7 +52,7 @@ public abstract class JsonConfig<T extends JsonConfig> implements LoadableConfig
     public T load() {
         try {
             this.logger.info("Attempting to load config, " + this.getClass().getSimpleName() + "..");
-            return (T) SkyBlock.getInstance().getGson().fromJson(String.join("", Files.readAllLines(this.getPath())), this.configurationClass);
+            return (T) GSON_INSTANCE.fromJson(String.join("", Files.readAllLines(this.getPath())), this.configurationClass);
         } catch (IOException | ClassCastException e) {
             if (e instanceof NoSuchFileException) {
                 this.logger.warning("Could not find, " + this.getPath().toFile().getName() + ", creating one now..");
@@ -65,15 +75,16 @@ public abstract class JsonConfig<T extends JsonConfig> implements LoadableConfig
     public void save() {
         try {
             this.logger.info("Saving config, " + this.getClass().getSimpleName() + "..");
-            if (!Files.exists(SkyBlock.getInstance().getPath())) {
-                Files.createDirectory(SkyBlock.getInstance().getPath());
+            Path saveDirectory = this.getPath().getParent();
+            if (!Files.exists(saveDirectory)) {
+                Files.createDirectory(saveDirectory);
             }
 
             if (!Files.exists(this.getPath())) {
                 Files.createFile(this.getPath());
             }
 
-            Files.write(this.getPath(), SkyBlock.getInstance().getGson().toJson(this).getBytes());
+            Files.write(this.getPath(), GSON_INSTANCE.toJson(this).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
