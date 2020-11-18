@@ -20,14 +20,8 @@ public class PluginConfig extends YamlConfig<PluginConfig> {
     /**
      * Represents a configuration file.
      */
-    @SuppressWarnings("all")
-    public PluginConfig() throws NullPointerException {
+    public PluginConfig() {
         super(PluginConfig.class);
-
-        this.displayName = this.config.getString("general.display_name");
-        this.allowNether = this.config.getBoolean("general.allow_nether");
-        this.maxResets = this.config.getInt("general.max_resets");
-        this.enableCommands = this.config.getBoolean("general.enable_default_commands");
     }
 
     public PluginConfig(String displayName, boolean allowNether, int maxResets, boolean enableCommands) {
@@ -63,13 +57,5 @@ public class PluginConfig extends YamlConfig<PluginConfig> {
     @Override
     public PluginConfig getDefaultConfig() {
         return DEFAULT_CONFIG;
-    }
-
-    @Override
-    public void writeValues(YamlConfiguration config) {
-        config.set("general.display_name", this.displayName);
-        config.set("general.allow_nether", this.allowNether);
-        config.set("general.max_resets", this.maxResets);
-        config.set("general.enable_default_commands", this.enableCommands);
     }
 }

@@ -19,12 +19,8 @@ public class GridConfig extends YamlConfig<GridConfig> {
     /**
      * Represents a configuration file.
      */
-    public GridConfig() throws NullPointerException {
+    public GridConfig() {
         super(GridConfig.class);
-
-        this.world = this.config.getString("grid.world_name");
-        this.width = this.config.getInt("grid.width");
-        this.length = this.config.getInt("grid.length");
     }
 
     private GridConfig(String world, int width, int length) {
@@ -59,12 +55,5 @@ public class GridConfig extends YamlConfig<GridConfig> {
     @Override
     public GridConfig getDefaultConfig() {
         return DEFAULT_CONFIG;
-    }
-
-    @Override
-    public void writeValues(YamlConfiguration config) {
-        config.set("grid.world_name", this.world);
-        config.set("grid.width", this.width);
-        config.set("grid.length", this.length);
     }
 }
